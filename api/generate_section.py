@@ -1,23 +1,19 @@
-# api/generate_section.py
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-import openai
+from openai import OpenAI
 import os
 
 router = APIRouter()
 
 # Load API key from environment (Vercel)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
-
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 class SectionRequest(BaseModel):
     title: str
     author: str
     section_name: str
     tone: str = "expert"
-
 
 @router.post("/generate_section")
 async def generate_section(req: SectionRequest):
@@ -39,8 +35,7 @@ async def generate_section(req: SectionRequest):
         f"Write in a polished, engaging, premium ebook style.\n"
     )
 
-    # GPT Response
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.85,
@@ -48,7 +43,6 @@ async def generate_section(req: SectionRequest):
 
     chapter_text = response.choices[0].message["content"]
 
-    # Image (Unsplash auto search)
     img_query = req.section_name.replace(" ", "+")
     image_url = f"https://source.unsplash.com/1200x800/?{img_query}"
 
