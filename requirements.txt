@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-openai
+openai>=1.2.0
 python-dotenv
 requests
 reportlab
