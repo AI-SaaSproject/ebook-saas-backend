@@ -16,7 +16,7 @@ class GenerateSectionRequest(BaseModel):
 async def generate_section(req: GenerateSectionRequest):
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-mini",  # or gpt-4o, whichever you use
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You generate ebook sections."},
                 {"role": "user", "content": req.prompt}
@@ -24,7 +24,9 @@ async def generate_section(req: GenerateSectionRequest):
             max_tokens=1200
         )
 
-        content = response.choices[0].message["content"]
+        # FIXED: correct way to access message content
+        content = response.choices[0].message.content
+
         return {
             "title": req.title,
             "section_text": content
