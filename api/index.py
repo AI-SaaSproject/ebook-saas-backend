@@ -7,9 +7,12 @@ Do NOT put your OPENAI_API_KEY here — add it in Vercel env vars.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# import routers
+# Import routers
 from api.generate_section import router as generate_router
 from api.compile_pdf import router as pdf_router
+from api.generate_outline import router as outline_router
+from api.generate_images import router as images_router
+from api.generate_full_ebook import router as full_router
 
 app = FastAPI(
     title="Ebook SaaS Backend",
@@ -17,7 +20,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS - allow your Lovable frontend to call the API
+# CORS (allow Lovable frontend + any web client)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -26,9 +29,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# include routes (files will be added next)
+# Register all API routes
 app.include_router(generate_router, prefix="", tags=["generation"])
 app.include_router(pdf_router, prefix="", tags=["export"])
+app.include_router(outline_router, prefix="", tags=["outline"])
+app.include_router(images_router, prefix="", tags=["images"])
+app.include_router(full_router, prefix="", tags=["full-ebook"])
 
 @app.get("/health")
 def health():
