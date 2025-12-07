@@ -9,6 +9,7 @@ router = APIRouter()
 
 STABILITY_API_KEY = os.getenv("STABILITY_API_KEY")
 
+
 class ImageRequest(BaseModel):
     chapters: list[str]
     style: str = "realistic watercolor digital illustration"
@@ -25,15 +26,15 @@ async def generate_images(req: ImageRequest):
         for chapter in req.chapters:
             prompt = f"""
             A {req.style} representing the chapter concept: '{chapter}'.
-            High detail, soft lighting, realistic textures, 
+            High detail, soft lighting, realistic textures,
             modern professional ebook aesthetic,
             no childish elements, no cartoon effects,
             relevant to the chapter’s meaning,
             clean white or subtle background.
             """
 
-            # Stability API endpoint for SDXL
-            url = "https://api.stability.ai/v1/generation/sdxl-1.0/text-to-image"
+            # Updated Stability SDXL engine (correct one)
+            url = "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image"
 
             headers = {
                 "Content-Type": "application/json",
@@ -46,8 +47,8 @@ async def generate_images(req: ImageRequest):
                 "samples": 1,
                 "width": 1024,
                 "height": 1024,
-                "cfg_scale": 7,   # quality + accuracy
-                "steps": 30       # detail level
+                "cfg_scale": 7,
+                "steps": 30
             }
 
             async with httpx.AsyncClient() as client:
@@ -59,7 +60,7 @@ async def generate_images(req: ImageRequest):
 
             data = resp.json()
 
-            # Base64 image response
+            # Base64 returned image
             img_base64 = data["artifacts"][0]["base64"]
 
             image_results.append({
